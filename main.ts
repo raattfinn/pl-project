@@ -4,6 +4,26 @@ controller.up.onEvent(ControllerButtonEvent.Pressed, function () {
 scene.onOverlapTile(SpriteKind.Player, sprites.dungeon.doorOpenSouth, function (sprite, location) {
     game.splash("It's too late to go back now")
 })
+controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
+    playerShot = sprites.createProjectileFromSprite(img`
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . 3 3 . . . . . . 
+        . . . . . 3 3 3 3 3 . . . . . . 
+        . . . . 3 3 3 3 3 3 3 3 . . . . 
+        . . . 3 3 3 3 3 3 3 3 3 . . . . 
+        . . 3 3 3 3 3 3 3 3 3 2 2 . . . 
+        . . . 2 2 2 3 3 3 3 3 2 . . . . 
+        . . . 2 2 2 3 2 2 3 3 2 . . . . 
+        . . 2 . 2 . 2 2 2 2 2 . . . . . 
+        . . . . . . 2 2 2 . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        . . . . . . . . . . . . . . . . 
+        `, playerSprite, 50, 0)
+})
 controller.left.onEvent(ControllerButtonEvent.Pressed, function () {
     playerSprite.setImage(img`
         . . . . . . . . . . . . . . . . 
@@ -55,11 +75,13 @@ controller.right.onEvent(ControllerButtonEvent.Pressed, function () {
 sprites.onOverlap(SpriteKind.Player, SpriteKind.Food, function (sprite, otherSprite) {
     sprites.destroy(key, effects.confetti, 500)
     tiles.setTileAt(tiles.getTileLocation(2, 0), assets.tile`myTile1`)
+    info.setLife(3)
     enemies(enemyList)
 })
 let enemyThree: Sprite = null
 let enemyTwo: Sprite = null
 let enemyOne: Sprite = null
+let playerShot: Sprite = null
 let enemyList: Image[] = []
 let playerSprite: Sprite = null
 let key: Sprite = null
