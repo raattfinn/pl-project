@@ -4,25 +4,11 @@ controller.up.onEvent(ControllerButtonEvent.Pressed, function () {
 scene.onOverlapTile(SpriteKind.Player, sprites.dungeon.doorOpenSouth, function (sprite, location) {
     game.splash("It's too late to go back now")
 })
-controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
-    playerShot = sprites.createProjectileFromSprite(img`
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . 3 3 . . . . . . 
-        . . . . . 3 3 3 3 3 . . . . . . 
-        . . . . 3 3 3 3 3 3 3 3 . . . . 
-        . . . 3 3 3 3 3 3 3 3 3 . . . . 
-        . . 3 3 3 3 3 3 3 3 3 2 2 . . . 
-        . . . 2 2 2 3 3 3 3 3 2 . . . . 
-        . . . 2 2 2 3 2 2 3 3 2 . . . . 
-        . . 2 . 2 . 2 2 2 2 2 . . . . . 
-        . . . . . . 2 2 2 . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        . . . . . . . . . . . . . . . . 
-        `, playerSprite, 50, 0)
+sprites.onOverlap(SpriteKind.Projectile, SpriteKind.Player, function (sprite, otherSprite) {
+    enemyHP += 1
+    if (enemyHP == 3) {
+        sprites.destroy(otherSprite, effects.disintegrate, 500)
+    }
 })
 controller.left.onEvent(ControllerButtonEvent.Pressed, function () {
     playerSprite.setImage(img`
@@ -44,14 +30,18 @@ controller.left.onEvent(ControllerButtonEvent.Pressed, function () {
         . . . . e e e . e e e . . . . . 
         `)
 })
-function enemies (enemyList: Image[]) {
-    enemyOne = sprites.create(enemyList._pickRandom(), SpriteKind.Enemy)
-    enemyTwo = sprites.create(enemyList._pickRandom(), SpriteKind.Enemy)
-    enemyThree = sprites.create(enemyList._pickRandom(), SpriteKind.Enemy)
-    tiles.placeOnTile(enemyOne, tiles.getTileLocation(2, 12))
-    tiles.placeOnTile(enemyThree, tiles.getTileLocation(15, 4))
-    tiles.placeOnTile(enemyTwo, tiles.getTileLocation(17, 20))
+function enemies (enemyList: any[]) {
+    for (let value of tiles.getTilesByType(sprites.dungeon.darkGroundNorthWest1)) {
+        enemyOne = sprites.create(enemyList2._pickRandom(), SpriteKind.Enemy)
+    }
 }
+sprites.onOverlap(SpriteKind.Player, SpriteKind.Food, function (sprite2, otherSprite) {
+    music.play(music.createSoundEffect(WaveShape.Noise, 1, 5000, 255, 255, 500, SoundExpressionEffect.None, InterpolationCurve.Linear), music.PlaybackMode.InBackground)
+    sprites.destroy(key, effects.confetti, 500)
+    tiles.setTileAt(tiles.getTileLocation(2, 0), assets.tile`myTile1`)
+    info.setLife(3)
+    enemies(enemyList2)
+})
 controller.right.onEvent(ControllerButtonEvent.Pressed, function () {
     playerSprite.setImage(img`
         . . . . . . . . . . . . . . . . 
@@ -72,17 +62,13 @@ controller.right.onEvent(ControllerButtonEvent.Pressed, function () {
         . . . . . e e e . e e e . . . . 
         `)
 })
-sprites.onOverlap(SpriteKind.Player, SpriteKind.Food, function (sprite, otherSprite) {
-    sprites.destroy(key, effects.confetti, 500)
-    tiles.setTileAt(tiles.getTileLocation(2, 0), assets.tile`myTile1`)
-    info.setLife(3)
-    enemies(enemyList)
+sprites.onOverlap(SpriteKind.Player, SpriteKind.Enemy, function (sprite, otherSprite) {
+    info.changeLifeBy(-1)
+    tiles.placeOnTile(playerSprite, tiles.getTileLocation(17, 30))
 })
-let enemyThree: Sprite = null
-let enemyTwo: Sprite = null
 let enemyOne: Sprite = null
-let playerShot: Sprite = null
-let enemyList: Image[] = []
+let enemyHP = 0
+let enemyList2: Image[] = []
 let playerSprite: Sprite = null
 let key: Sprite = null
 tiles.setCurrentTilemap(tilemap`level1`)
@@ -126,40 +112,40 @@ playerSprite = sprites.create(img`
 tiles.placeOnTile(playerSprite, tiles.getTileLocation(17, 30))
 controller.moveSprite(playerSprite, 100, 0)
 scene.cameraFollowSprite(playerSprite)
-playerSprite.ay = 200
-enemyList = [img`
+playerSprite.ay = 300
+enemyList2 = [img`
     . . . . . . . . . . . . . . . . 
     . . . . . . . . . . . . . . f . 
     . . . . . f f f f f . . . f 5 f 
     . . f f f 8 8 8 8 f f f . f 5 f 
     . f 8 8 8 8 5 5 8 8 8 f f 5 5 f 
     . . f f f 8 8 8 8 8 8 f f 5 f . 
-    . . . . f f 8 8 8 8 8 f f 5 f . 
-    . . . . . f f 8 8 8 8 8 f 5 f . 
+    . . . . f f c c c 8 8 f f 5 f . 
+    . . . . . f f c 8 8 8 8 f 5 f . 
     . . . . . f f 8 8 8 8 8 f 5 5 f 
     . . . f f f 8 8 8 8 8 8 f 5 5 f 
-    . . . f 8 8 8 8 8 8 8 8 f 5 5 f 
-    . . f f 8 8 8 8 8 f f f f 5 5 f 
-    . f f f f 8 8 8 8 f 8 8 8 f f . 
-    . f 8 8 f 8 8 8 f f 8 8 8 f . . 
+    . . . f c 8 8 8 8 8 8 8 f 5 5 f 
+    . . f f c 8 8 8 8 f f f f 5 5 f 
+    . f f f f c 8 8 8 f c 8 8 f f . 
+    . f c c f c c c f f c c c f . . 
     . f f f f f f f f f f f f f . . 
     . . . . . . . . . . . . . . . . 
     `, img`
     . . . . . . . . . . . . . . . . 
     . . f f . . . f f f . . . . . . 
-    . f 7 7 f . f 7 7 f f . . . . . 
+    . f 7 1 f . f 7 7 f f . . . . . 
     . 7 2 2 f f 7 2 2 7 f . . . . . 
     f 7 2 2 7 7 7 2 2 7 f f . . . . 
-    f 7 7 7 7 7 7 7 7 7 7 f f . . . 
-    f 7 7 7 7 7 7 7 7 7 7 7 7 f . . 
-    f f f f f f f f f 7 7 7 7 7 f . 
+    f 7 7 7 7 7 7 7 7 7 1 f f . . . 
+    f 7 7 7 7 7 7 7 7 7 7 1 1 f . . 
+    f f f f f f f f f 7 7 7 7 1 f . 
     . f 7 7 7 7 7 7 7 7 7 7 7 7 f . 
     . . f f 7 7 7 7 7 f f f 7 7 7 f 
-    . . . . f 7 7 7 f f 7 7 7 7 7 f 
-    . . . f f f 7 7 f 7 7 7 7 7 7 f 
-    . . f 7 7 f f f f f f 7 7 7 7 f 
-    . . f 7 7 7 f f 7 7 7 7 7 7 7 f 
-    . . . f f f . f 7 7 7 f f f f . 
+    . . . . f 8 8 7 f f 7 7 7 7 7 f 
+    . . . f f f 8 7 f 7 7 7 7 7 7 f 
+    . . f 7 7 f f f f f f 7 7 7 8 f 
+    . . f 7 7 7 f f 7 7 7 8 8 8 8 f 
+    . . . f f f . f 7 8 8 f f f f . 
     . . . . . . . . f f f . . . . . 
     `, img`
     . . . f . f f . . . . . . . . . 
@@ -179,3 +165,21 @@ enemyList = [img`
     . . . . f a f . . . f a f . . . 
     . . . . f f . . . . . f f . . . 
     `]
+let playerShot = sprites.create(img`
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    . . . . . . . . . . . . . . . . 
+    `, SpriteKind.Projectile)
