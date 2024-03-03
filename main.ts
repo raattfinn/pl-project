@@ -1,14 +1,14 @@
+namespace SpriteKind {
+    export const bounce = SpriteKind.create()
+}
 controller.up.onEvent(ControllerButtonEvent.Pressed, function () {
     playerSprite.vy = -150
 })
 scene.onOverlapTile(SpriteKind.Player, sprites.dungeon.doorOpenSouth, function (sprite, location) {
     game.splash("It's too late to go back now")
 })
-sprites.onOverlap(SpriteKind.Projectile, SpriteKind.Player, function (sprite, otherSprite) {
-    enemyHP += 1
-    if (enemyHP == 3) {
-        sprites.destroy(otherSprite, effects.disintegrate, 500)
-    }
+sprites.onOverlap(SpriteKind.Enemy, SpriteKind.bounce, function (sprite, otherSprite) {
+    enemyOne.vx = enemyOne.vx * -1
 })
 controller.left.onEvent(ControllerButtonEvent.Pressed, function () {
     playerSprite.setImage(img`
@@ -31,8 +31,38 @@ controller.left.onEvent(ControllerButtonEvent.Pressed, function () {
         `)
 })
 function enemies (enemyList: any[]) {
-    for (let value of tiles.getTilesByType(sprites.dungeon.darkGroundNorthWest1)) {
+    for (let level of tiles.getTilesByType(sprites.dungeon.darkGroundNorthWest1)) {
         enemyOne = sprites.create(enemyList2._pickRandom(), SpriteKind.Enemy)
+        tiles.placeOnTile(enemyOne, level)
+        tiles.setTileAt(level, sprites.dungeon.darkGroundCenter)
+        if (Math.percentChance(50)) {
+            enemyOne.vx = 50
+        } else {
+            enemyOne.vx = -50
+        }
+    }
+    for (let level of tiles.getTilesByType(sprites.dungeon.darkGroundNorthEast1)) {
+        bounce = sprites.create(img`
+            . . . . . . . . 6 6 6 6 6 6 6 6 
+            . . . . . . . . 6 6 6 6 6 6 6 6 
+            . . . . . . . . 6 6 6 6 6 6 6 6 
+            . . . . . . . . 6 6 6 6 6 6 6 6 
+            . . . . . . . . 6 6 6 6 6 6 6 6 
+            . . . . . . . . 6 6 6 6 6 6 6 6 
+            . . . . . . . . 6 6 6 6 6 6 6 6 
+            . . . . . . . . 6 6 6 6 6 6 6 6 
+            . . . . . . . . 6 6 6 6 6 6 6 6 
+            . . . . . . . . 6 6 6 6 6 6 6 6 
+            . . . . . . . . 6 6 6 6 6 6 6 6 
+            . . . . . . . . 6 6 6 6 6 6 6 6 
+            . . . . . . . . 6 6 6 6 6 6 6 6 
+            . . . . . . . . 6 6 6 6 6 6 6 6 
+            . . . . . . . . 6 6 6 6 6 6 6 6 
+            . . . . . . . . 6 6 6 6 6 6 6 6 
+            `, SpriteKind.bounce)
+        tiles.placeOnTile(bounce, level)
+        tiles.setTileAt(level, sprites.dungeon.darkGroundCenter)
+        bounce.setFlag(SpriteFlag.Invisible, true)
     }
 }
 sprites.onOverlap(SpriteKind.Player, SpriteKind.Food, function (sprite2, otherSprite) {
@@ -66,11 +96,12 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.Enemy, function (sprite, otherSp
     info.changeLifeBy(-1)
     tiles.placeOnTile(playerSprite, tiles.getTileLocation(17, 30))
 })
+let bounce: Sprite = null
 let enemyOne: Sprite = null
-let enemyHP = 0
 let enemyList2: Image[] = []
 let playerSprite: Sprite = null
 let key: Sprite = null
+let level = 1
 tiles.setCurrentTilemap(tilemap`level1`)
 key = sprites.create(img`
     . . . . . . . . . . . . . . . . 
@@ -165,21 +196,3 @@ enemyList2 = [img`
     . . . . f a f . . . f a f . . . 
     . . . . f f . . . . . f f . . . 
     `]
-let playerShot = sprites.create(img`
-    . . . . . . . . . . . . . . . . 
-    . . . . . . . . . . . . . . . . 
-    . . . . . . . . . . . . . . . . 
-    . . . . . . . . . . . . . . . . 
-    . . . . . . . . . . . . . . . . 
-    . . . . . . . . . . . . . . . . 
-    . . . . . . . . . . . . . . . . 
-    . . . . . . . . . . . . . . . . 
-    . . . . . . . . . . . . . . . . 
-    . . . . . . . . . . . . . . . . 
-    . . . . . . . . . . . . . . . . 
-    . . . . . . . . . . . . . . . . 
-    . . . . . . . . . . . . . . . . 
-    . . . . . . . . . . . . . . . . 
-    . . . . . . . . . . . . . . . . 
-    . . . . . . . . . . . . . . . . 
-    `, SpriteKind.Projectile)
