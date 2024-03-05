@@ -1,14 +1,11 @@
 namespace SpriteKind {
-    export const bounce = SpriteKind.create()
+    export const bounce_tile = SpriteKind.create()
 }
 controller.up.onEvent(ControllerButtonEvent.Pressed, function () {
     playerSprite.vy = -150
 })
-scene.onOverlapTile(SpriteKind.Player, sprites.dungeon.doorOpenSouth, function (sprite, location) {
-    game.splash("It's too late to go back now")
-})
-sprites.onOverlap(SpriteKind.Enemy, SpriteKind.bounce, function (sprite, otherSprite) {
-    enemyOne.vx = enemyOne.vx * -1
+sprites.onOverlap(SpriteKind.Enemy, SpriteKind.bounce_tile, function (sprite, otherSprite) {
+    sprite.vx = sprite.vx * -1
 })
 controller.left.onEvent(ControllerButtonEvent.Pressed, function () {
     playerSprite.setImage(img`
@@ -31,42 +28,42 @@ controller.left.onEvent(ControllerButtonEvent.Pressed, function () {
         `)
 })
 function enemies (enemyList: any[]) {
-    for (let level of tiles.getTilesByType(sprites.dungeon.darkGroundNorthWest1)) {
+    for (let value of tiles.getTilesByType(sprites.dungeon.darkGroundNorthWest1)) {
         enemyOne = sprites.create(enemyList2._pickRandom(), SpriteKind.Enemy)
-        tiles.placeOnTile(enemyOne, level)
-        tiles.setTileAt(level, sprites.dungeon.darkGroundCenter)
+        tiles.setTileAt(value, sprites.dungeon.darkGroundCenter)
+        tiles.placeOnTile(enemyOne, value)
         if (Math.percentChance(50)) {
             enemyOne.vx = 50
         } else {
             enemyOne.vx = -50
         }
     }
-    for (let level of tiles.getTilesByType(sprites.dungeon.darkGroundNorthEast1)) {
-        bounce = sprites.create(img`
-            . . . . . . . . 6 6 6 6 6 6 6 6 
-            . . . . . . . . 6 6 6 6 6 6 6 6 
-            . . . . . . . . 6 6 6 6 6 6 6 6 
-            . . . . . . . . 6 6 6 6 6 6 6 6 
-            . . . . . . . . 6 6 6 6 6 6 6 6 
-            . . . . . . . . 6 6 6 6 6 6 6 6 
-            . . . . . . . . 6 6 6 6 6 6 6 6 
-            . . . . . . . . 6 6 6 6 6 6 6 6 
-            . . . . . . . . 6 6 6 6 6 6 6 6 
-            . . . . . . . . 6 6 6 6 6 6 6 6 
-            . . . . . . . . 6 6 6 6 6 6 6 6 
-            . . . . . . . . 6 6 6 6 6 6 6 6 
-            . . . . . . . . 6 6 6 6 6 6 6 6 
-            . . . . . . . . 6 6 6 6 6 6 6 6 
-            . . . . . . . . 6 6 6 6 6 6 6 6 
-            . . . . . . . . 6 6 6 6 6 6 6 6 
-            `, SpriteKind.bounce)
-        tiles.placeOnTile(bounce, level)
-        tiles.setTileAt(level, sprites.dungeon.darkGroundCenter)
-        bounce.setFlag(SpriteFlag.Invisible, true)
+    for (let value of tiles.getTilesByType(sprites.dungeon.darkGroundNorthEast1)) {
+        direction_change = sprites.create(img`
+            6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 
+            6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 
+            6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 
+            6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 
+            6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 
+            6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 
+            6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 
+            6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 
+            6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 
+            6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 
+            6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 
+            6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 
+            6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 
+            6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 
+            6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 
+            6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 
+            `, SpriteKind.bounce_tile)
+        tiles.placeOnTile(direction_change, value)
+        tiles.setTileAt(value, sprites.dungeon.darkGroundCenter)
+        direction_change.setFlag(SpriteFlag.Invisible, true)
     }
 }
 sprites.onOverlap(SpriteKind.Player, SpriteKind.Food, function (sprite2, otherSprite) {
-    music.play(music.createSoundEffect(WaveShape.Noise, 1, 5000, 255, 255, 500, SoundExpressionEffect.None, InterpolationCurve.Linear), music.PlaybackMode.InBackground)
+    music.play(music.createSoundEffect(WaveShape.Noise, 1, 4391, 255, 86, 500, SoundExpressionEffect.Tremolo, InterpolationCurve.Linear), music.PlaybackMode.InBackground)
     sprites.destroy(key, effects.confetti, 500)
     tiles.setTileAt(tiles.getTileLocation(2, 0), assets.tile`myTile1`)
     info.setLife(3)
@@ -93,15 +90,18 @@ controller.right.onEvent(ControllerButtonEvent.Pressed, function () {
         `)
 })
 sprites.onOverlap(SpriteKind.Player, SpriteKind.Enemy, function (sprite, otherSprite) {
-    info.changeLifeBy(-1)
-    tiles.placeOnTile(playerSprite, tiles.getTileLocation(17, 30))
+    if (playerSprite.y < otherSprite.y) {
+        sprites.destroy(otherSprite, effects.disintegrate, 500)
+    } else {
+        info.changeLifeBy(-1)
+        tiles.placeOnTile(playerSprite, tiles.getTileLocation(17, 30))
+    }
 })
-let bounce: Sprite = null
+let direction_change: Sprite = null
 let enemyOne: Sprite = null
 let enemyList2: Image[] = []
 let playerSprite: Sprite = null
 let key: Sprite = null
-let level = 1
 tiles.setCurrentTilemap(tilemap`level1`)
 key = sprites.create(img`
     . . . . . . . . . . . . . . . . 
