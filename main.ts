@@ -27,9 +27,9 @@ controller.left.onEvent(ControllerButtonEvent.Pressed, function () {
         . . . . e e e . e e e . . . . . 
         `)
 })
-function enemies (enemyList: any[]) {
+function enemies (list: Image[]) {
     for (let value of tiles.getTilesByType(sprites.dungeon.darkGroundNorthWest1)) {
-        enemyOne = sprites.create(enemyList2._pickRandom(), SpriteKind.Enemy)
+        enemyOne = sprites.create(list._pickRandom(), SpriteKind.Enemy)
         tiles.setTileAt(value, sprites.dungeon.darkGroundCenter)
         tiles.placeOnTile(enemyOne, value)
         if (Math.percentChance(50)) {
@@ -67,7 +67,7 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.Food, function (sprite2, otherSp
     sprites.destroy(key, effects.confetti, 500)
     tiles.setTileAt(tiles.getTileLocation(2, 0), assets.tile`myTile1`)
     info.setLife(3)
-    enemies(enemyList2)
+    enemies(list)
 })
 controller.right.onEvent(ControllerButtonEvent.Pressed, function () {
     playerSprite.setImage(img`
@@ -99,7 +99,7 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.Enemy, function (sprite, otherSp
 })
 let direction_change: Sprite = null
 let enemyOne: Sprite = null
-let enemyList2: Image[] = []
+let list: Image[] = []
 let playerSprite: Sprite = null
 let key: Sprite = null
 tiles.setCurrentTilemap(tilemap`level1`)
@@ -144,7 +144,7 @@ tiles.placeOnTile(playerSprite, tiles.getTileLocation(17, 30))
 controller.moveSprite(playerSprite, 100, 0)
 scene.cameraFollowSprite(playerSprite)
 playerSprite.ay = 300
-enemyList2 = [img`
+list = [img`
     . . . . . . . . . . . . . . . . 
     . . . . . . . . . . . . . . f . 
     . . . . . f f f f f . . . f 5 f 
